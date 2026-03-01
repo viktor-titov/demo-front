@@ -1,0 +1,35 @@
+name: demo-front
+
+services:
+  front:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: demo-front
+    restart: unless-stopped
+    networks:
+      - demo-front-network
+
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: demo-front-npm # Явное имя контейнера для надежности
+    restart: unless-stopped
+    environment:
+      TZ: "Australia/Brisbane"
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - demo-front-network
+
+networks:
+  demo-front-network:
+    driver: bridge
+
+volumes:
+  npm_data:
+  npm_letsencrypt:
